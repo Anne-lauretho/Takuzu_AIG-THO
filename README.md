@@ -1,7 +1,7 @@
 # Takuzu_M1_SSD 
 
 Welcome to our project for the HAX815X course for the academic year 2024-2025.
-Our project is titled **Takuzu_M1_SSD**.\
+Our project is titled **Takuzu_AIG-THO**.\
 The team members are :
 - AIGOIN Emilie
 - THOMAS Anne-Laure
@@ -27,12 +27,13 @@ Takuzu is an accessible game but becomes increasingly complex as the grid size i
 
 Here is a diagram of the architecture of our project, detailing the location of each folder and file:
 
-```Takuzu_M1_SSD/
-    ├── www/
-    │    └── takuzu.png
-    ├──.gitignore
-    ├── Application.R
-    ├── Ideas.txt
-    ├── Maquette application Takuzu.png
-    ├── README.md
-    └── requirements.txt
+```Takuzu_AIG-THO/
+    ├── Grille 2/
+    │    ├── R/
+    │    │   ├── Test_App2.R
+    │    │   └── takuzu_grid.R
+    │    ├── man
+    │    ├── DESCRIPTION
+    │    ├── Grille2.Rproj
+    │    └── NAMESPACE
+    └── README.md
