@@ -6,8 +6,6 @@ library(shinyjs)
 library(shinyWidgets)
 library(Grille2)
 
-setwd("/home/anne-laure/Takuzu_M1_SSD/Test_Application_A")
-
 # UI
 ui <- fluidPage(
   useShinyjs(),
@@ -531,12 +529,6 @@ server <- function(input, output, session) {
     size <- grid_size()
     data <- game_data()
     values <- cell_values()
-
-    # Débogage
-    print("Valeurs actuelles:")
-    print(values)
-    print("Solution attendue:")
-    print(data$solution)
 
     # Vérifier que toutes les cellules sont remplies
     if (any(values == "")) {
