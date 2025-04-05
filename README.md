@@ -1,4 +1,4 @@
-# Takuzu_M1_SSD 
+# Takuzu_AIG-THO 
 
 Welcome to our project for the HAX815X course for the academic year 2024-2025.
 Our project is titled **Takuzu_AIG-THO**.\
