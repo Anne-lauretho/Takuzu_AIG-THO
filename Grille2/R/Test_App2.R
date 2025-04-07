@@ -530,6 +530,12 @@ server <- function(input, output, session) {
     data <- game_data()
     values <- cell_values()
 
+    # Débogage
+    print("Valeurs actuelles:")
+    print(values)
+    print("Solution attendue:")
+    print(data$solution)
+
     # Vérifier que toutes les cellules sont remplies
     if (any(values == "")) {
       showModal(modalDialog(

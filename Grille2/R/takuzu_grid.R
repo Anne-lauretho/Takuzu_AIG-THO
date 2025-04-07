@@ -13,25 +13,47 @@
 #'   \item{initial_filled}{A logical matrix indicating which cells were initially filled}
 #'
 #' @export
-generate_takuzu_grid <- function(n, difficulty) {
+generate_takuzu_grid <- function(n, difficulty, seed = NULL) {
+  if (!is.null(seed)) set.seed(seed)
+
   # Générer une grille complète valide
   full_grid <- function() {
     grid <- matrix(rep("", n * n), nrow = n)
 
     check_valid <- function(grid, row, col, value) {
-      grid[row, col] <- value
+      temp_grid <- grid # copie temporaire de la grille pour tester dsans modifier grid directement
+      temp_grid[row, col] <- value
 
-      if (sum(grid[row, ] == "0") > n / 2 || sum(grid[row, ] == "1") > n / 2) return(FALSE)
-      if (sum(grid[, col] == "0") > n / 2 || sum(grid[, col] == "1") > n / 2) return(FALSE)
+      # Vérification des nombres de 0/1
+      if (sum(temp_grid[row, ] == "0") > n / 2 || sum(temp_grid[row, ] == "1") > n / 2) return(FALSE)
+      if (sum(temp_grid[, col] == "0") > n / 2 || sum(temp_grid[, col] == "1") > n / 2) return(FALSE)
 
-      row_seq <- rle(grid[row, ])
-      col_seq <- rle(grid[, col])
+      # Vérification des suites consécutives interdites avec rle()
+      row_seq <- rle(temp_grid[row, ])
+      col_seq <- rle(temp_grid[, col])
 
       if (any(row_seq$lengths[row_seq$values == "0"] >= 3) ||
           any(row_seq$lengths[row_seq$values == "1"] >= 3)) return(FALSE)
 
       if (any(col_seq$lengths[col_seq$values == "0"] >= 3) ||
           any(col_seq$lengths[col_seq$values == "1"] >= 3)) return(FALSE)
+
+      # Vérification d'unicité des lignes/colonnes complètes
+      if (all(temp_grid[row, ] != "")) {
+        for (r in seq_len(n)) {
+          if (r != row && all(temp_grid[r, ] != "") && all(temp_grid[r, ] == temp_grid[row, ])) {
+            return(FALSE)
+          }
+        }
+      }
+
+      if (all(temp_grid[, col] != "")) {
+        for (c in seq_len(n)) {
+          if (c != col && all(temp_grid[, c] != "") && all(temp_grid[, c] == temp_grid[, col])) {
+            return(FALSE)
+          }
+        }
+      }
 
       return(TRUE)
     }
@@ -78,6 +100,7 @@ generate_takuzu_grid <- function(n, difficulty) {
   return(list(
     grid = puzzle_grid,
     solution = solution,
-    initial_filled = initial_filled
+    initial_filled = initial_filled,
+    valid = !is.null(complete_grid)
   ))
 }
