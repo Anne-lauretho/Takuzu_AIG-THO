@@ -28,12 +28,14 @@ Takuzu est un jeu accessible, mais sa complexité augmente avec la taille de la 
 Voici un schéma de l'architecture de notre projet, détaillant l'emplacement de chaque dossier et fichier :
 
 ```Takuzu_AIG-THO/
-    ├── Grille 2/
+    ├── Grille2/
     │    ├── R/
-    │    │   ├── Test_App2.R
-    │    │   └── takuzu_grid.R
-    │    ├── man
+    │    │   ├── Application.R
+    │    │   └── generate_grid.R
+    │    ├── man/
     │    ├── DESCRIPTION
     │    ├── Grille2.Rproj
     │    └── NAMESPACE
     └── README.md
+
+    
