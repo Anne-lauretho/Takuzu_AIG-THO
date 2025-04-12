@@ -277,7 +277,7 @@ ui <- fluidPage(
             pickerInput(
               inputId = "fixed_cell_color",
               label = "Couleur des cases initiales",
-              choices = c("Gris clair" = "#e0e0e0",
+              choices = c("Gris" = "#e0e0e0",
                           "Bleu" = "#add8e6",
                           "Vert" = "#cdecc5",
                           "Jaune" = "#fffacd",
@@ -304,7 +304,7 @@ ui <- fluidPage(
           actionButton("new_game_btn", "Nouvelle partie", class = "btn-custom"),
           actionButton("show_solution_btn", "Voir Solution", class = "btn-custom"),
           actionButton("change_size_btn", "Changer taille", class = "btn-custom"),
-          actionButton("back_to_home", "Retour", class = "btn-custom")
+          actionButton("back_to_home", "Accueil", class = "btn-custom")
         ),
 
         div(
