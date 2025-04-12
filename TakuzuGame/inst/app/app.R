@@ -176,6 +176,16 @@ ui <- fluidPage(
 
         # Affichage de la taille actuelle
         uiOutput("game_size_display"),
+        
+        # Slider de difficulté
+        div(class = "difficulty-select",
+            radioGroupButtons(
+              inputId = "difficulty",
+              label = "Choisissez la difficulté",
+              choices = c("Facile" = 0.2, "Moyen" = 0.4, "Difficile" = 0.6, "Extrême" = 0.8),
+              checkIcon = list(yes = icon("check"))
+            )
+        ),
 
         # Grille interactive
         uiOutput("grid_ui"),
@@ -192,13 +202,6 @@ ui <- fluidPage(
         div(
           style = "overflow-y: auto; max-height: 80vh; padding-bottom: 20px;",
           tableOutput("takuzu_grid")  # ou ton équivalent
-        ),
-
-        # Slider de difficulté
-        div(class = "difficulty-slider",
-            sliderInput("difficulty", "Difficulté",
-                        min = 0.1, max = 0.8, value = 0.5, step = 0.1,
-                        width = "80%")
         )
     )
   )
@@ -441,7 +444,7 @@ server <- function(input, output, session) {
     updateTextInput(session, "grid_size", value = "6")
 
     # Générer la grille initiale
-    game_data(generate_takuzu_grid(6, input$difficulty))
+    game_data(generate_takuzu_grid(6, as.numeric(input$difficulty)))
 
     # Initialiser les valeurs des cellules
     cell_values(game_data()$grid)
@@ -459,7 +462,7 @@ server <- function(input, output, session) {
     updateTextInput(session, "grid_size", value = "8")
 
     # Générer la grille initiale
-    game_data(generate_takuzu_grid(8, input$difficulty))
+    game_data(generate_takuzu_grid(8, as.numeric(input$difficulty)))
 
     # Initialiser les valeurs des cellules
     cell_values(game_data()$grid)
@@ -477,7 +480,7 @@ server <- function(input, output, session) {
     updateTextInput(session, "grid_size", value = "10")
 
     # Générer la grille initiale
-    game_data(generate_takuzu_grid(10, input$difficulty))
+    game_data(generate_takuzu_grid(10, as.numeric(input$difficulty)))
 
     # Initialiser les valeurs des cellules
     cell_values(game_data()$grid)
@@ -707,7 +710,7 @@ server <- function(input, output, session) {
   observeEvent(input$new_game_btn, {
     # Obtenir la taille et difficulté actuelles
     size <- grid_size()
-    diff_level <- input$difficulty
+    diff_level <- as.numeric(input$difficulty) # Prendre la difficulté sélectionnée
 
     # Générer une nouvelle grille avec la taille actuelle
     new_data <- generate_takuzu_grid(size, diff_level)
@@ -744,3 +747,4 @@ server <- function(input, output, session) {
 
 # Lancer l'application
 shinyApp(ui, server)
+
