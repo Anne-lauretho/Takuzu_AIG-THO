@@ -1,7 +1,7 @@
 # A améliorer :
-  # Ajouter la règle pour ne pas avoir deux colonnes ou deux lignes similaires dans la même grille
-  # Alléger les code en vérifiant si tout est utile, mettre un fichier styles.css et faire des fonctions
-  # Commenter le code
+# Ajouter la règle pour ne pas avoir deux colonnes ou deux lignes similaires dans la même grille
+# Alléger les code en vérifiant si tout est utile, mettre un fichier styles.css et faire des fonctions
+# Commenter le code
 
 
 # Charger les packages
@@ -10,14 +10,13 @@ library(shiny)
 library(shinydashboard)
 library(shinyjs)
 library(shinyWidgets)
-library(Grille2)
+library(TakuzuGame)
 
 # UI
 ui <- fluidPage(
   useShinyjs(),
   tags$head(
-    tags$link(rel = "stylesheet", type = "text/css",
-              href = file.path("www", "styles.css"))
+    tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
   ),
 
   # Arrière-plan avec nuages
@@ -157,13 +156,6 @@ ui <- fluidPage(
 
 # Serveur
 server <- function(input, output, session) {
-
-  www_path <- system.file("www", package = "Grille2")
-  if (www_path != "") {
-    addResourcePath("www", www_path)
-  } else {
-    warning("Le dossier 'www' n'a pas été trouvé dans le package. Les styles CSS ne seront pas chargés.")
-  }
 
   # Variable pour stocker le temps de départ
   start_time <- reactiveVal(NULL)

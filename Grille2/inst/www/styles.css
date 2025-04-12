@@ -1,0 +1,181 @@
+/* Style général */
+body {
+  background-color: #D8BFD8;
+  color: white;
+  text-align: center;
+  overflow: hidden;
+  overflow-y: scroll; /* défilement vertical */
+  scroll-behavior: smooth; /* défilement fluide */
+}
+
+.title {
+  font-size: 50px;
+  font-weight: bold;
+  text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Boutons */
+.btn-custom {
+  background: #8E1D7B;
+  border: 3px solid #5E0950;
+  color: white;
+  font-size: 22px;
+  font-weight: bold;
+  width: 220px;
+  height: 60px;
+  margin: 15px;
+  border-radius: 15px;
+  box-shadow: 4px 4px 6px rgba(0,0,0,0.3);
+  position: relative;
+  z-index: 10;
+}
+
+.btn-custom:hover {
+  background: #D8BFD8;
+  border: 3px solid #5E0950;
+}
+
+/* Effet de nuages */
+.cloud-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.cloud {
+  position: absolute;
+  background: white;
+  width: 120px;
+  height: 70px;
+  border-radius: 50%;
+  box-shadow: 30px 10px 0 10px white, -30px 10px 0 10px white;
+  opacity: 0.7;
+  animation: float 12s linear infinite alternate;
+  z-index: 0;
+}
+
+.cloud:nth-child(1) { top: 5%;  left: 10%; animation-duration: 14s; }
+.cloud:nth-child(2) { top: 20%; left: 50%; animation-duration: 12s; }
+.cloud:nth-child(3) { top: 35%; left: 80%; animation-duration: 16s; }
+.cloud:nth-child(4) { top: 50%; left: 20%; animation-duration: 18s; }
+.cloud:nth-child(5) { top: 65%; left: 60%; animation-duration: 15s; }
+.cloud:nth-child(6) { top: 80%; left: 30%; animation-duration: 17s; }
+.cloud:nth-child(7) { top: 90%; left: 70%; animation-duration: 13s; }
+
+@keyframes float {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(40px); }
+}
+
+/* Conteneur de jeu */
+.game-container {
+  background-color: rgba(255, 255, 255, 0.8);
+  color: black;
+  border: 3px solid #5E0950;;
+  padding: 20px;
+  margin: 50px auto;
+  width: 80%;
+  box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+  position: relative;
+  z-index: 20;
+}
+
+/* Cellules Takuzu */
+.takuzu-cell {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  font-weight: bold;
+  border: 2px solid #5E0950;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.takuzu-cell-fixed {
+  background-color: #e0e0e0;
+}
+
+.takuzu-cell-editable {
+  background-color: white;
+}
+
+.takuzu-cell-editable:hover {
+  background-color: #8E1D7B;
+}
+
+/* Éléments d'interface */
+.difficulty-slider {
+  margin: 20px auto;
+  width: 50%;
+}
+
+.color-picker {
+  margin: 10px auto;
+}
+
+.rules-section {
+  text-align: left;
+  margin: 20px auto;
+  width: 90%;
+}
+
+.size-option {
+  display: inline-block;
+  width: 150px;
+  height: 100px;
+  margin: 15px;
+  background-color: #8E1D7B;
+  color: white;
+  border-radius: 10px;
+  border: 3px solid #5E0950;
+  cursor: pointer;
+  transition: all 0.3s;
+  vertical-align: top;
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+}
+
+.size-option:hover {
+  background-color: #D8BFD8;
+}
+
+.size-value {
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.size-desc {
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+/* Timer */
+#game_timer {
+  font-size: 28px;
+  font-weight: bold;
+  color: #5E0950;
+  background: rgba(216, 191, 216, 0.5);
+  padding: 10px 20px;
+  border-radius: 10px;
+  margin: 15px auto;
+  display: inline-block;
+}
+
+/* Titres */
+h2 {
+  color: #5E0950;
+  font-size: 24px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Champs cachés */
+#display_mode, #grid_size {
+  visibility: hidden;
+  height: 0px;
+}
