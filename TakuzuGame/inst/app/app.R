@@ -113,12 +113,13 @@ ui <- fluidPage(
   # Page des règles
   conditionalPanel(
     condition = "input.display_mode == 'rules'",
-    div(class = "game-container",
-        div(class = "rules-section",
-            h2("Règles du jeu Takuzu"),
+    div(class = "game-container rules-container",  # Ajout d'une nouvelle classe
+        div(class = "rules-content",  # Nouveau div avec classe pour le contenu scrollable
+            h2("Règles du jeu Takuzu"),  # Déplacé à l'intérieur du div scrollable
+
             p("Le Takuzu est un jeu de logique qui se joue sur une grille comportant des cellules à remplir avec les chiffres 0 et 1.
-              Pour remplir les grilles, appuyer sur une case pour changer le chiffre.
-              Chaque grille possède une unique solution et doit respecter les règles suivantes pour pouvoir lobtenir :"),
+            Pour remplir les grilles, appuyer sur une case pour changer le chiffre.
+            Chaque grille possède une unique solution et doit respecter les règles suivantes pour pouvoir lobtenir :"),
 
             # Règle 1 avec image
             div(class = "rule-item",
@@ -126,7 +127,7 @@ ui <- fluidPage(
                          tags$li("Il est interdit d'avoir plus de deux chiffres identiques l'un à côté de l'autre :")
                 ),
                 div(class = "rule-image",
-                         tags$img(src = "rule1.png", alt = "Exemple règle 1", width = "200px")
+                    tags$img(src = "rule1.png", alt = "Exemple règle 1", width = "200px")
                 )
             ),
 
@@ -136,7 +137,7 @@ ui <- fluidPage(
                          tags$li("Chaque ligne et chaque colonne doivent comptabiliser autant de 0 que de 1 :")
                 ),
                 div(class = "rule-image",
-                         tags$img(src = "rule2.png", alt = "Exemple règle 2", width = "200px")
+                    tags$img(src = "rule2.png", alt = "Exemple règle 2", width = "200px")
                 )
             ),
 
@@ -146,10 +147,9 @@ ui <- fluidPage(
                          tags$li("Aucune ligne ou colonne ne peut être identique :")
                 ),
                 div(class = "rule-image",
-                         tags$img(src = "rule3.png", alt = "Exemple règle 3", width = "200px")
+                    tags$img(src = "rule3.png", alt = "Exemple règle 3", width = "200px")
                 )
             ),
-
 
             h2("Stratégies pour résoudre un Takuzu"),
             p("Pour résoudre efficacement une grille de Takuzu, il est recommandé d'appliquer les stratégies suivantes :"),
@@ -159,7 +159,9 @@ ui <- fluidPage(
               tags$li(strong("Comparer les lignes et les colonnes : "), "Lorsqu'une ligne ou une colonne est presque complétée, il convient de vérifier qu'elle ne soit pas identique à une autre déjà remplie et d'ajuster si nécessaire.")
             )
         ),
-        actionButton("back_from_rules", "Retour", class = "btn-custom")
+        div(class = "button-wrapper",
+            actionButton("back_from_rules", "Retour", class = "btn-custom")
+        )
     )
   ),
 
@@ -278,6 +280,57 @@ server <- function(input, output, session) {
       .modal-content {
         border: 3px solid ", dark_accent, " !important;
       }
+
+      /* Styles pour la page de règles */
+    .rules-container {
+      position: fixed;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 800px;
+      width: 100%;
+      height: 80vh;
+      max-height: 800px;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      overflow: hidden;
+      z-index: 1000;  /* Augmenté pour être sûr qu'il passe au-dessus des nuages */
+    }
+
+    .rules-content {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 10px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .rules-content p, .rules-content li {
+      text-align: left;
+    }
+
+    .rules-content h2 {
+      text-align: center;
+    }
+
+    .button-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .btn-custom:focus, .btn-custom:active {
+      outline: none !important;
+      box-shadow: none !important;
+      background: ", accent_color, " !important;
+      border: 3px solid ", dark_accent, " !important;
+    }
+
+    .btn-custom:active:focus {
+      background: ", accent_color, " !important;
+    }
+
     ")
 
     tags$style(HTML(css))
