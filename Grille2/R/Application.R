@@ -168,6 +168,17 @@ ui <- fluidPage(
         margin-top: 10px;
       }
 
+#game_timer {
+  font-size: 28px;
+  font-weight: bold;
+  color: #5E0950;
+  background: rgba(216, 191, 216, 0.5);
+  padding: 10px 20px;
+  border-radius: 10px;
+  margin: 15px auto;
+  display: inline-block;
+}
+
       h2 {
         color: #5E0950;
         font-size: 24px;
@@ -234,7 +245,7 @@ ui <- fluidPage(
             tags$ul(
               tags$li("Chaque cellule doit contenir soit un 0, soit un 1."),
               tags$li("Il est interdit d'avoir plus de deux 0 ou deux 1 consécutifs dans une même ligne ou colonne."),
-              tags$li("Attention, aucune ligne ou colonne ne peut être identique.")
+              tags$li("Aucune ligne ou colonne ne peut être identique.")
             ),
             h2("Stratégies pour résoudre un Takuzu"),
             p("Pour résoudre efficacement une grille de Takuzu, il est recommandé d'appliquer les stratégies suivantes :"),
@@ -254,6 +265,9 @@ ui <- fluidPage(
     condition = "input.display_mode == 'game'",
     div(class = "game-container",
         h2("Jeu de Takuzu"),
+
+        # Affichage simple du temps de jeu
+        h3(textOutput("game_timer")),
 
         # Affichage de la taille actuelle
         uiOutput("game_size_display"),
@@ -288,6 +302,7 @@ ui <- fluidPage(
         div(
           actionButton("check_btn", "Vérifier", class = "btn-custom"),
           actionButton("new_game_btn", "Nouvelle partie", class = "btn-custom"),
+          actionButton("show_solution_btn", "Voir Solution", class = "btn-custom"),
           actionButton("change_size_btn", "Changer taille", class = "btn-custom"),
           actionButton("back_to_home", "Retour", class = "btn-custom")
         ),
@@ -310,6 +325,30 @@ ui <- fluidPage(
 # Serveur
 server <- function(input, output, session) {
 
+  # Variable pour stocker le temps de départ
+  start_time <- reactiveVal(NULL)
+  timer_active <- reactiveVal(FALSE)
+  showing_solution <- reactiveVal(FALSE)
+  temp_values <- reactiveVal(NULL)
+
+  # Affichage du minuteur
+  output$game_timer <- renderText({
+    invalidateLater(1000, session)
+
+    # Si le minuteur n'est pas actif, afficher 00:00
+    if (!timer_active() || is.null(start_time())) {
+      return("Temps: 00:00")
+    }
+
+    # Calculer le temps écoulé
+    elapsed <- as.numeric(difftime(Sys.time(), start_time(), units = "secs"))
+    minutes <- floor(elapsed / 60)
+    seconds <- floor(elapsed %% 60)
+
+    # Formater et afficher
+    sprintf("Temps: %02d:%02d", minutes, seconds)
+  })
+
   # État du jeu actuel
   game_data <- reactiveVal(NULL)
 
@@ -320,12 +359,6 @@ server <- function(input, output, session) {
 
   # Valeurs actuelles des cellules (réactives)
   cell_values <- reactiveVal(NULL)
-
-  # Affichage de la taille actuelle
-  output$game_size_display <- renderUI({
-    size <- grid_size()
-    h3(paste0("Taille de la grille: ", size, "x", size))
-  })
 
   # Aller à la page de sélection de taille
   observeEvent(input$start_button, {
@@ -367,6 +400,10 @@ server <- function(input, output, session) {
     # Initialiser les valeurs des cellules
     cell_values(game_data()$grid)
 
+    # Démarrer le minuteur
+    start_time(Sys.time())
+    timer_active(TRUE)
+
     # Passer à l'écran de jeu
     updateTextInput(session, "display_mode", value = "game")
   })
@@ -380,6 +417,10 @@ server <- function(input, output, session) {
 
     # Initialiser les valeurs des cellules
     cell_values(game_data()$grid)
+
+    # Démarrer le minuteur
+    start_time(Sys.time())
+    timer_active(TRUE)
 
     # Passer à l'écran de jeu
     updateTextInput(session, "display_mode", value = "game")
@@ -395,8 +436,44 @@ server <- function(input, output, session) {
     # Initialiser les valeurs des cellules
     cell_values(game_data()$grid)
 
+    # Démarrer le minuteur
+    start_time(Sys.time())
+    timer_active(TRUE)
+
     # Passer à l'écran de jeu
     updateTextInput(session, "display_mode", value = "game")
+  })
+
+  observeEvent(input$show_solution_btn, {
+    req(game_data())
+
+    if (!showing_solution()) {
+      # Si on n'affiche pas déjà la solution, sauvegarder les valeurs actuelles
+      temp_values(cell_values())
+
+      # Afficher la solution
+      cell_values(game_data()$solution)
+      showing_solution(TRUE)
+
+      # Changer le texte du bouton
+      updateActionButton(session, "show_solution_btn", label = "Masquer Solution")
+    } else {
+      # Si on affiche déjà la solution, restaurer les valeurs du joueur
+      cell_values(temp_values())
+      showing_solution(FALSE)
+
+      # Changer le texte du bouton pour revenir à l'état initial
+      updateActionButton(session, "show_solution_btn", label = "Voir Solution")
+    }
+
+    # Mettre à jour l'affichage de toutes les cellules
+    size <- grid_size()
+    for (row in 1:size) {
+      for (col in 1:size) {
+        cell_id <- paste0("cell_", row, "_", col)
+        updateActionButton(session, cell_id, label = cell_values()[row, col])
+      }
+    }
   })
 
   # Génération dynamique de la grille UI
@@ -550,9 +627,21 @@ server <- function(input, output, session) {
     correct <- all(values == data$solution)
 
     if (correct) {
+
+      # Arrêter le minuteur
+      timer_active(FALSE)
+
+      # Correction
+      elapsed <- as.numeric(difftime(Sys.time(), start_time(), units = "secs"))
+      final_minutes <- floor(elapsed / 60)
+      final_seconds <- floor(elapsed %% 60)
+      final_time <- sprintf("%02d:%02d", final_minutes, final_seconds)
+
+      # Message de félicitations avec le temps
       showModal(modalDialog(
         title = "Félicitations !",
-        HTML("<h3 style='color: black; text-align: center;'>Bravo ! Vous avez résolu le puzzle correctement.</h3>"),
+        HTML(sprintf("<p style='color: black; text-align: center;'>Bravo ! Vous avez résolu le puzzle correctement en %d minutes et %d secondes.</p>",
+                     final_minutes, final_seconds)),
         easyClose = TRUE,
         footer = modalButton("Continuer")
       ))
@@ -576,6 +665,14 @@ server <- function(input, output, session) {
     new_data <- generate_takuzu_grid(size, diff_level)
     game_data(new_data)
     cell_values(new_data$grid)
+
+    # Redémarrer le minuteur
+    start_time(Sys.time())
+    timer_active(TRUE)
+
+    # Réinitialiser l'état du bouton "Voir Solution"
+    showing_solution(FALSE)
+    updateActionButton(session, "show_solution_btn", label = "Voir Solution")
 
     # Afficher un message
     showNotification(
