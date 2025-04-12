@@ -1,8 +1,6 @@
-# A améliorer :
-# Ajouter la règle pour ne pas avoir deux colonnes ou deux lignes similaires dans la même grille
-# Alléger les code en vérifiant si tout est utile, mettre un fichier styles.css et faire des fonctions
-# Commenter le code
+# Installer le package (décoder la ligne du dessous)
 
+#devtools::load_all(".")
 
 # Charger les packages
 
@@ -446,12 +444,15 @@ server <- function(input, output, session) {
 
     # Vérifier que toutes les cellules sont remplies
     if (any(values == "")) {
-      showModal(modalDialog(
-        title = "Grille incomplète",
-        HTML("<p style='color: black;'>Veuillez remplir toutes les cellules avant de vérifier.</p>"),
-        easyClose = TRUE,
-        footer = modalButton("OK")
-      ))
+      showModal(
+        modalDialog(
+          title = div("Essayez encore !", style = "color: #8E1D7B;"),
+          HTML("<p class = 'verification'> Il y a des erreurs dans votre solution. Continuez à essayer.</p>"),
+          easyClose = TRUE,
+          footer = modalButton("OK"),
+          class = "custom-modal-style"
+        )
+      )
       return()
     }
 
@@ -471,18 +472,20 @@ server <- function(input, output, session) {
 
       # Message de félicitations avec le temps
       showModal(modalDialog(
-        title = "Félicitations !",
-        HTML(sprintf("<p style='color: black; text-align: center;'>Bravo ! Vous avez résolu le puzzle correctement en %d minutes et %d secondes.</p>",
+        title = div("Félicitation !", style = "color: #8E1D7B;"),
+        HTML(sprintf("<p class = 'verification'> Bravo, vous avez résolu le puzzle en %d minutes et %d secondes.</p>",
                      final_minutes, final_seconds)),
         easyClose = TRUE,
-        footer = modalButton("Continuer")
+        footer = modalButton("Continuer"),
+        class = "custom-modal-style"
       ))
     } else {
       showModal(modalDialog(
-        title = "Essayez encore",
-        HTML("<p style='color: black;'>Il y a des erreurs dans votre solution. Continuez à essayer !</p>"),
+        title = div("Essayez encore !", style = "color: #8E1D7B;"),
+        HTML("<p class = 'verification'> Il y a des erreurs dans votre solution. Continuez à essayer. </p>"),
         easyClose = TRUE,
-        footer = modalButton("OK")
+        footer = modalButton("OK"),
+        class = "custom-modal-style"
       ))
     }
   })
@@ -509,7 +512,7 @@ server <- function(input, output, session) {
     # Afficher un message
     showNotification(
       "Nouvelle partie générée !",
-      type = "message",
+      type = "default",
       duration = 3
     )
   })
