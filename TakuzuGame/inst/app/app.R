@@ -205,6 +205,9 @@ ui <- fluidPage(
 # Serveur
 server <- function(input, output, session) {
 
+  # Ajouter dans la partie server au début
+  error_count <- reactiveVal(0)
+
   # Génération de styles dynamiques basés sur le thème
   output$dynamic_styles <- renderUI({
     theme <- input$theme_color
@@ -559,6 +562,8 @@ server <- function(input, output, session) {
                 cell_values(values)
                 updateActionButton(session, cell_id, label = new_value)
               }
+              shinyjs::removeClass(selector = paste0("#", cell_id), class = "cell-error")
+              shinyjs::removeClass(selector = paste0("#", cell_id), class = "cell-empty")
             }
           }, ignoreInit = TRUE)
         })
@@ -576,29 +581,40 @@ server <- function(input, output, session) {
     data <- game_data()
     values <- cell_values()
 
-    # Vérifier que toutes les cellules sont remplies
-    if (any(values == "")) {
-      showModal(
-        modalDialog(
-          title = div("Essayez encore !", style = "color: black;"),
-          HTML("<p class = 'verification'> Il y a des erreurs dans votre solution. Continuez à essayer.</p>"),
-          easyClose = TRUE,
-          footer = modalButton("OK"),
-          class = "custom-modal-style"
-        )
-      )
-      return()
+    # Réinitialiser le compteur d'erreurs
+    errors <- 0
+
+    # Vérifier chaque cellule
+    for (row in 1:size) {
+      for (col in 1:size) {
+        cell_id <- paste0("cell_", row, "_", col)
+
+        if (values[row, col] == "") {
+          # Cellule vide - on ne la compte pas comme erreur mais on la marque quand même
+          shinyjs::addClass(selector = paste0("#", cell_id), class = "cell-empty")
+          shinyjs::removeClass(selector = paste0("#", cell_id), class = "cell-error")
+        } else if (values[row, col] != data$solution[row, col]) {
+          # Cellule incorrecte
+          errors <- errors + 1
+          shinyjs::addClass(selector = paste0("#", cell_id), class = "cell-error")
+          shinyjs::removeClass(selector = paste0("#", cell_id), class = "cell-empty")
+        } else {
+          # Cellule correcte
+          shinyjs::removeClass(selector = paste0("#", cell_id), class = "cell-error")
+          shinyjs::removeClass(selector = paste0("#", cell_id), class = "cell-empty")
+        }
+      }
     }
 
-    # Vérifier si la grille est valide selon les règles du Takuzu
-    correct <- all(values == data$solution)
+    # Mettre à jour le compteur d'erreurs
+    error_count(errors)
 
-    if (correct) {
-
-      # Arrêter le minuteur
+    # Afficher un message selon le résultat
+    if (errors == 0 && !any(values == "")) {
+      # Tout est correct et complet
       timer_active(FALSE)
 
-      # Correction
+      # Calculer le temps final
       elapsed <- as.numeric(difftime(Sys.time(), start_time(), units = "secs"))
       final_minutes <- floor(elapsed / 60)
       final_seconds <- floor(elapsed %% 60)
@@ -613,12 +629,22 @@ server <- function(input, output, session) {
         footer = modalButton("Continuer"),
         class = "custom-modal-style"
       ))
-    } else {
+    } else if (errors > 0) {
+      # Il y a des erreurs
       showModal(modalDialog(
-        title = div("Essayez encore !", style = "color: black;"),
-        HTML("<p class = 'verification'> Il y a des erreurs dans votre solution. Continuez à essayer. </p>"),
+        title = div("Erreurs détectées", style = "color: black;"),
+        HTML(sprintf("<p class = 'verification'> Il y a %d erreur(s) dans votre grille. Les cases incorrectes sont marquées en rouge.</p>", errors)),
         easyClose = TRUE,
-        footer = modalButton("OK"),
+        footer = modalButton("Continuer"),
+        class = "custom-modal-style"
+      ))
+    } else {
+      # Des cases sont vides
+      showModal(modalDialog(
+        title = div("Grille incomplète", style = "color: black;"),
+        HTML("<p class = 'verification'> Aucune erreur n'a été détectée pour le moment mais des cases sont vides. Veuillez compléter la grille.</p>"),
+        easyClose = TRUE,
+        footer = modalButton("Continuer"),
         class = "custom-modal-style"
       ))
     }
@@ -639,9 +665,9 @@ server <- function(input, output, session) {
     start_time(Sys.time())
     timer_active(TRUE)
 
-    # Réinitialiser l'état du bouton "Voir Solution"
+    # Réinitialiser l'état du bouton "Voir solution"
     showing_solution(FALSE)
-    updateActionButton(session, "show_solution_btn", label = "Voir Solution")
+    updateActionButton(session, "show_solution_btn", label = "Voir solution")
 
     # Afficher un message
     showNotification(
@@ -649,6 +675,17 @@ server <- function(input, output, session) {
       type = "default",
       duration = 3
     )
+
+    # Réinitialiser les styles d'erreur pour toutes les cellules potentielles
+    for (row in 1:size) {
+      for (col in 1:size) {
+        cell_id <- paste0("cell_", row, "_", col)
+        shinyjs::removeClass(selector = paste0("#", cell_id), class = "cell-error")
+        shinyjs::removeClass(selector = paste0("#", cell_id), class = "cell-empty")
+      }
+    }
+    # Réinitialiser le compteur d'erreurs
+    error_count(0)
   })
 }
 

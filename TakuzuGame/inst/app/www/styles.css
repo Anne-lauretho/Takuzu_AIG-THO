@@ -222,3 +222,20 @@ h2 {
   max-width: 100%;
   border-radius: 5px;
 }
+
+/* Ajouter dans styles.css */
+.cell-error {
+  background-color: #ff6b6b !important;
+  color: white !important;
+  animation: pulse-error 1s;
+}
+
+.cell-empty {
+  border: 2px dashed #ff6b6b !important;
+}
+
+@keyframes pulse-error {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
