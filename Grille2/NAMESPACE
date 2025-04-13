@@ -1,3 +1,0 @@
-exportPattern("^[[:alpha:]]+")
-
-export(generate_takuzu_grid)
