@@ -55,12 +55,12 @@ Voici un aperçu de l'architecture du projet, avec une explication de chaque fic
     - **NAMESPACE** liste les fonctions exportées et leurs dépendances.
     - **TakuzuGame.Rproj** est un fichier projet RStudio.
 
-### Lancer l'application Shiny (!! À voir si c'est bon !!)
+### Lancer l'application Shiny 
 Pour exécuter l'application Shiny, vous pouvez utiliser le fichier **app.R** dans le dossier **inst/app/**. Voici comment procéder : 
 
 1. Ouvrez le projet dans RStudio via le fichier **TakuzuGame.Rproj**.
 2. Dans le panneau Fichiers, ouvrez **app.R** situé dans inst/app/.
-3. Cliquez sur "Run App" (ou exécutez le fichier manuellement via la console avec shiny::runApp("inst/app")).
+3. Cliquez sur "Run App" ou exécutez le fichier manuellement via la console avec **shiny::runApp("inst/app")**.
 
 L'application s’ouvrira dans votre navigateur, et vous pourrez commencer à jouer à Takuzu !
 
