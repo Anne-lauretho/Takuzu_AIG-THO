@@ -1,41 +1,73 @@
-# Installer le package (décoder la ligne du dessous)
-#devtools::load_all(".")
+# Installer le package (décommenter la ligne du dessous)
+
+devtools::load_all(".")
 
 # Charger les packages
+
 library(shiny)
 library(shinydashboard)
 library(shinyjs)
 library(shinyWidgets)
 library(TakuzuGame)
 
-# UI
+themes <- TakuzuGame::colour_theme()
+
+########## UI ##########
+
 ui <- fluidPage(
   useShinyjs(),
   tags$head(
-    tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
+
+    # Accéder aux personnalisations graphique du fichier styles.css
+    tags$link(rel = "stylesheet",
+              type = "text/css",
+              href = "styles.css")
   ),
 
   # Input caché pour gérer l'état, la taille et le thème
-  textInput("display_mode", label = NULL, value = "home", width = "0px"),
-  textInput("grid_size", label = NULL, value = "6", width = "0px"),
-  textInput("theme_color", label = NULL, value = "#d7bde2", width = "0px"), # Thème par défaut
-  tags$style(type="text/css", "#display_mode, #grid_size, #theme_color {visibility: hidden; height: 0px;}"),
+
+  # Contrôleur d'état pour l'application
+  textInput("display_mode",
+            label = NULL,
+            value = "home",  # La page d'accueil démarre à la page "home"
+            width = "0px"),  # Rend le champ invisible
+
+  # Stocke les tailles de grilles
+  textInput("grid_size",
+            label = NULL,
+            value = "6",
+            width = "0px"),
+
+  # Définit le thème par défaut (ici violet)
+  textInput("theme_color",
+            label = NULL,
+            value = "#d7bde2",
+            width = "0px"),
+
+  # Définit le fichier de personnaliser de l'apparence de notre app (styles.css)
+  tags$style(type = "text/css",
+             "#display_mode,
+             #grid_size,
+             #theme_color {visibility: hidden; height: 0px;}"),
 
   # Style dynamique basé sur le thème choisi
   uiOutput("dynamic_styles"),
 
-  # Arrière-plan avec nuages
+  # Arrière-plan avec 7 nuages qui défilent
   div(class = "cloud-container",
       div(class = "cloud"), div(class = "cloud"), div(class = "cloud"),
       div(class = "cloud"), div(class = "cloud"), div(class = "cloud"),
       div(class = "cloud")
   ),
 
-  # Page d'accueil
+  # Page d'accueil (mettre les boutons, les images et le texte)
   conditionalPanel(
     condition = "input.display_mode == 'home'",
     div(class = "button-container",
-        h1(class = "title", "Takuzu Game"),
+        div(style = "display: flex; align-items: center; justify-content: center; width: 100%;",
+            h1("Jeu de Takuzu"),
+            img(src = "logo_takuzu.png", height = "100px", style = "margin-right: 10px;")
+        ),
         actionButton("start_button", "Jouer", class = "btn-custom"),
         br(),
         actionButton("rules_button", "Règles", class = "btn-custom"),
@@ -54,30 +86,14 @@ ui <- fluidPage(
             h3("Choisissez un thème de couleur"),
 
             div(style = "display: flex; justify-content: center; flex-wrap: wrap;",
-                div(id = "theme_violet", class = "theme-option", onclick = "Shiny.setInputValue('select_theme_violet', Math.random())",
-                    div(class = "color-preview", style = "background-color: #d7bde2;"),
-                    div(class = "theme-name", "Violet")
-                ),
-                div(id = "theme_pink", class = "theme-option", onclick = "Shiny.setInputValue('select_theme_pink', Math.random())",
-                    div(class = "color-preview", style = "background-color: #ffd1de;"),
-                    div(class = "theme-name", "Rose")
-                ),
-                div(id = "theme_orange", class = "theme-option", onclick = "Shiny.setInputValue('select_theme_orange', Math.random())",
-                    div(class = "color-preview", style = "background-color: #fad7a0;"),
-                    div(class = "theme-name", "Orange")
-                ),
-                div(id = "theme_blue", class = "theme-option", onclick = "Shiny.setInputValue('select_theme_blue', Math.random())",
-                    div(class = "color-preview", style = "background-color: #aed6f1;"),
-                    div(class = "theme-name", "Bleu")
-                ),
-                div(id = "theme_green", class = "theme-option", onclick = "Shiny.setInputValue('select_theme_green', Math.random())",
-                    div(class = "color-preview", style = "background-color: #a9dfbf;"),
-                    div(class = "theme-name", "Vert")
-                ),
-                div(id = "theme_grey", class = "theme-option", onclick = "Shiny.setInputValue('select_theme_grey', Math.random())",
-                    div(class = "color-preview", style = "background-color: #ccd1d1;"),
-                    div(class = "theme-name", "Gris")
-                )
+                lapply(themes, function(themes) {
+                  div(id = paste0("theme_", themes$id),
+                      class = "theme-option",
+                      onclick = sprintf("Shiny.setInputValue('select_theme_%s', Math.random())", themes$id),
+                      div(class = "color-preview", style = paste0("background-color: ", themes$primary, ";")),
+                      div(class = "theme-name", themes$name)
+                  )
+                })
             )
         ),
 
@@ -86,6 +102,7 @@ ui <- fluidPage(
   ),
 
   # Page de sélection de taille
+
   conditionalPanel(
     condition = "input.display_mode == 'size_select'",
     div(class = "game-container",
@@ -111,52 +128,62 @@ ui <- fluidPage(
   ),
 
   # Page des règles
+
   conditionalPanel(
     condition = "input.display_mode == 'rules'",
-    div(class = "game-container rules-container",  # Ajout d'une nouvelle classe
-        div(class = "rules-content",  # Nouveau div avec classe pour le contenu scrollable
-            h2("Règles du jeu Takuzu"),  # Déplacé à l'intérieur du div scrollable
+    div(class = "game-container rules-container",
+
+        # Mettre le contenu scrollable
+        div(class = "rules-content",
+            h2("Règles du jeu Takuzu"),
 
             p("Le Takuzu est un jeu de logique qui se joue sur une grille comportant des cellules à remplir avec les chiffres 0 et 1.
             Pour remplir les grilles, appuyer sur une case pour changer le chiffre.
             Chaque grille possède une unique solution et doit respecter les règles suivantes pour pouvoir lobtenir :"),
 
-            # Règle 1 avec image
+            # Première règle avec image 1
             div(class = "rule-item",
                 tags$div(class = "rule-text",
                          tags$li("Il est interdit d'avoir plus de deux chiffres identiques l'un à côté de l'autre :")
                 ),
                 div(class = "rule-image",
-                    tags$img(src = "rule1.png", alt = "Exemple règle 1", width = "200px")
+                    tags$img(src = "rule1.png", width = "100px")
                 )
             ),
 
-            # Règle 2 avec image
+            # Deuxième règle avec image 2
             div(class = "rule-item",
                 tags$div(class = "rule-text",
                          tags$li("Chaque ligne et chaque colonne doivent comptabiliser autant de 0 que de 1 :")
                 ),
                 div(class = "rule-image",
-                    tags$img(src = "rule2.png", alt = "Exemple règle 2", width = "200px")
+                    tags$img(src = "rule2.png", width = "100px")
                 )
             ),
 
-            # Règle 3 avec image
+            # Troisième règle avec image 3
             div(class = "rule-item",
                 tags$div(class = "rule-text",
                          tags$li("Aucune ligne ou colonne ne peut être identique :")
                 ),
                 div(class = "rule-image",
-                    tags$img(src = "rule3.png", alt = "Exemple règle 3", width = "200px")
+                    tags$img(src = "rule3.png", width = "100px")
                 )
             ),
 
             h2("Stratégies pour résoudre un Takuzu"),
-            p("Pour résoudre efficacement une grille de Takuzu, il est recommandé d'appliquer les stratégies suivantes :"),
+            p("Pour résoudre efficacement une grille de Takuzu,
+              il est recommandé d'appliquer les stratégies suivantes :"),
             tags$ul(
-              tags$li(strong("Éviter les triplets : "), "Lorsqu'une ligne ou une colonne contient déjà deux 0 ou deux 1 consécutifs, la cellule suivante doit impérativement contenir l'autre chiffre."),
-              tags$li(strong("Assurer l'équilibre : "), "Chaque ligne et chaque colonne doivent comporter un nombre équivalent de 0 et de 1. Il faut donc éviter de dépasser cette limite lors du remplissage."),
-              tags$li(strong("Comparer les lignes et les colonnes : "), "Lorsqu'une ligne ou une colonne est presque complétée, il convient de vérifier qu'elle ne soit pas identique à une autre déjà remplie et d'ajuster si nécessaire.")
+              tags$li(strong("Éviter les triplets : "),
+                      "Lorsqu'une ligne ou une colonne contient déjà deux 0 ou deux 1 consécutifs,
+                      la cellule suivante doit impérativement contenir l'autre chiffre."),
+              tags$li(strong("Assurer l'équilibre : "),
+                      "Chaque ligne et chaque colonne doivent comporter un nombre équivalent de 0 et de 1.
+                      Il faut donc éviter de dépasser cette limite lors du remplissage."),
+              tags$li(strong("Comparer les lignes et les colonnes : "),
+                      "Lorsqu'une ligne ou une colonne est presque complétée,
+                      il convient de vérifier qu'elle ne soit pas identique à une autre déjà remplie et d'ajuster si nécessaire.")
             )
         ),
         div(class = "button-wrapper",
@@ -166,184 +193,206 @@ ui <- fluidPage(
   ),
 
   # Page du jeu
+
   conditionalPanel(
     condition = "input.display_mode == 'game'",
     div(class = "game-container",
-        h2("Jeu de Takuzu"),
+        div(style = "display: flex; align-items: center; justify-content: center; width: 100%;",
+            h2("Jeu de Takuzu"),
+            img(src = "logo_takuzu.png", height = "50px", style = "margin-right: 10px;")
+        ),
 
         # Affichage simple du temps de jeu
+
         h3(textOutput("game_timer")),
 
-        # Affichage de la taille actuelle
-        uiOutput("game_size_display"),
-        
         # Slider de difficulté
+
         div(class = "difficulty-select",
             radioGroupButtons(
               inputId = "difficulty",
-              label = "Choisissez la difficulté",
-              choices = c("Facile" = 0.2, "Moyen" = 0.4, "Difficile" = 0.6, "Extrême" = 0.8),
+              label = "Choisissez la difficulté (recharger une grille)",
+
+              # 4 choix de difficulté (enlève plus ou moins de cases)
+              choices = c("Facile" = 0.2,
+                          "Moyen" = 0.4,
+                          "Difficile" = 0.6,
+                          "Extrême" = 0.8),
               checkIcon = list(yes = icon("check"))
             )
         ),
 
         # Grille interactive
+
         uiOutput("grid_ui"),
 
         # Boutons de contrôle
+
         div(
-          actionButton("check_btn", "Vérifier", class = "btn-custom"),
-          actionButton("new_game_btn", "Nouvelle partie", class = "btn-custom"),
-          actionButton("show_solution_btn", "Voir Solution", class = "btn-custom"),
-          actionButton("change_size_btn", "Changer taille", class = "btn-custom"),
-          actionButton("back_to_home", "Accueil", class = "btn-custom")
+          actionButton("check_btn",
+                       "Vérifier",
+                       class = "btn-custom"),
+          actionButton("new_game_btn",
+                       "Nouvelle partie",
+                       class = "btn-custom"),
+          actionButton("show_solution_btn",
+                       "Voir Solution",
+                       class = "btn-custom"),
+          actionButton("change_size_btn",
+                       "Changer taille",
+                       class = "btn-custom"),
+          actionButton("back_to_home",
+                       "Accueil",
+                       class = "btn-custom")
         ),
 
         div(
           style = "overflow-y: auto; max-height: 80vh; padding-bottom: 20px;",
-          tableOutput("takuzu_grid")  # ou ton équivalent
+          tableOutput("TakuzuGame")
         )
     )
   )
 )
 
-# Serveur
+######### Serveur ##########
+
 server <- function(input, output, session) {
 
-  # Ajouter dans la partie server au début
-  error_count <- reactiveVal(0)
-
   # Génération de styles dynamiques basés sur le thème
-  output$dynamic_styles <- renderUI({
-    theme <- input$theme_color
 
-    # Calculer les couleurs secondaires et d'accentuation basées sur le thème principal
-    # Pour le bouton et d'autres éléments
-    if (theme == "#d7bde2") { # Violet
-      accent_color <- "#af7ac5"
-      dark_accent <- "#633974"
-    } else if (theme == "#aed6f1") { # Bleu
-      accent_color <- "#5dade2"
-      dark_accent <- "#0066CC"
-    } else if (theme == "#a9dfbf") { # Vert
-      accent_color <- "#52be80"
-      dark_accent <- "#196f3d"
-    } else if (theme == "#fad7a0") { # Orange
-      accent_color <- "#f5b041"
-      dark_accent <- "#9c640c"
-    } else if (theme == "#ffd1de") { # Rose
-      accent_color <- "#ffa1bd"
-      dark_accent <- "#da4c80"
-    } else if (theme == "#ccd1d1") { # Gris
-      accent_color <- "#99a3a4"
-      dark_accent <- "#515a5a"
+  output$dynamic_styles <- renderUI({
+
+    # Récupérer le thème actuel
+    current_theme_id <- sub("#.*", "", input$theme_color)
+
+    # Identifier le thème correspondant dans la liste des thèmes
+    selected_theme <- NULL
+    for (theme_name in names(themes)) {
+      if (themes[[theme_name]]$primary == input$theme_color) {
+        selected_theme <- themes[[theme_name]]
+        break
+      }
     }
+
+    if (is.null(selected_theme)) {
+
+      # Par défaut, utiliser le thème violet
+      selected_theme <- themes$violet
+    }
+
+    # Extraire les couleurs du thème sélectionné
+    primary_color <- selected_theme$primary
+    accent_color <- selected_theme$accent
+    outline_color <- selected_theme$outline
 
     css <- paste0("
-      body {
-        background-color: ", theme, ";
-      }
-      .btn-custom {
-        background: ", accent_color, ";
-        border: 3px solid ", dark_accent, ";
-      }
-      .btn-custom:hover {
-        background: ", theme, ";
-        border: 3px solid ", dark_accent, ";
-      }
-      .game-container {
-        border: 3px solid ", dark_accent, ";
-      }
-      .takuzu-cell {
-        border: 2px solid ", dark_accent, ";
-      }
-      .takuzu-cell-fixed {
-        background-color: ", theme, ";
-      }
-      .takuzu-cell-editable:hover {
-        background-color: ", accent_color, ";
-      }
-      h2, #game_timer {
-        color: ", dark_accent, ";
-      }
-      #game_timer {
-        background: ", theme, ";
-      }
-      .size-option, .theme-option {
-        background-color: ", accent_color, ";
-        border: 3px solid ", dark_accent, ";
-      }
-      .size-option:hover, .theme-option:hover {
-        background-color: ", theme, ";
-      }
-      .modal-header, .modal-footer {
-        background-color: ", theme, " !important;
-        border-color: ", dark_accent, " !important;
-      }
-      .modal-content {
-        border: 3px solid ", dark_accent, " !important;
-      }
+  body {
+    background-color: ", primary_color, ";
+  }
+  .btn-custom {
+    background: ", accent_color, ";
+    border: 3px solid ", outline_color, ";
+  }
+  .btn-custom:hover {
+    background: ", primary_color, ";
+    border: 3px solid ", outline_color, ";
+  }
+  .game-container {
+    border: 3px solid ", outline_color, ";
+  }
+  .takuzu-cell {
+    border: 2px solid ", outline_color, ";
+  }
+  .takuzu-cell-fixed {
+    background-color: ", primary_color, ";
+  }
+  .takuzu-cell-editable:hover {
+    background-color: ", accent_color, ";
+  }
+  h2, #game_timer {
+    color: ", outline_color, ";
+  }
+  #game_timer {
+    background: ", primary_color, ";
+  }
+  .size-option, .theme-option {
+    background-color: ", accent_color, ";
+    border: 3px solid ", outline_color, ";
+  }
+  .size-option:hover, .theme-option:hover {
+    background-color: ", primary_color, ";
+  }
+  .modal-header, .modal-footer {
+    background-color: ", primary_color, " !important;
+    border-color: ", outline_color, " !important;
+  }
+  .modal-content {
+    border: 3px solid ", outline_color, " !important;
+  }
 
-      /* Styles pour la page de règles */
-    .rules-container {
-      position: fixed;
-      top: 40%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      max-width: 800px;
-      width: 100%;
-      height: 80vh;
-      max-height: 800px;
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-      overflow: hidden;
-      z-index: 1000;  /* Augmenté pour être sûr qu'il passe au-dessus des nuages */
-    }
+  /* Styles pour la page de règles */
 
-    .rules-content {
-      flex: 1;
-      overflow-y: auto;
-      padding-right: 10px;
-      margin-bottom: 20px;
-      text-align: left;
-    }
+  .rules-container {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 800px;
+    width: 100%;
+    height: 80vh;
+    max-height: 800px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    overflow: hidden;
+    z-index: 1000;
+  }
 
-    .rules-content p, .rules-content li {
-      text-align: left;
-    }
+  .rules-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 10px;
+    margin-bottom: 20px;
+    text-align: left;
+  }
 
-    .rules-content h2 {
-      text-align: center;
-    }
+  .rules-content p, .rules-content li {
+    text-align: left;
+  }
 
-    .button-wrapper {
-      display: flex;
-      justify-content: center;
-      margin-top: 10px;
-    }
+  .rules-content h2 {
+    text-align: center;
+  }
 
-    .btn-custom:focus, .btn-custom:active {
-      outline: none !important;
-      box-shadow: none !important;
-      background: ", accent_color, " !important;
-      border: 3px solid ", dark_accent, " !important;
-    }
+  .button-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
 
-    .btn-custom:active:focus {
-      background: ", accent_color, " !important;
-    }
+  .btn-custom:focus, .btn-custom:active {
+    outline: none !important;
+    box-shadow: none !important;
+    background: ", accent_color, " !important;
+    border: 3px solid ", outline_color, " !important;
+  }
 
-    ")
+  .btn-custom:active:focus {
+    background: ", accent_color, " !important;
+  }
+  ")
 
     tags$style(HTML(css))
   })
 
-  # Variable pour stocker le temps de départ
+  # Variable de départ pour stocker le temps et les erreurs
+
   start_time <- reactiveVal(NULL)
   timer_active <- reactiveVal(FALSE)
   showing_solution <- reactiveVal(FALSE)
   temp_values <- reactiveVal(NULL)
+  error_count <- reactiveVal(0)
+  cell_values <- reactiveVal(NULL)
 
   # Affichage du minuteur
   output$game_timer <- renderText({
@@ -371,9 +420,6 @@ server <- function(input, output, session) {
     as.numeric(input$grid_size)
   })
 
-  # Valeurs actuelles des cellules (réactives)
-  cell_values <- reactiveVal(NULL)
-
   # Aller à la page de sélection de taille
   observeEvent(input$start_button, {
     updateTextInput(session, "display_mode", value = "size_select")
@@ -390,29 +436,17 @@ server <- function(input, output, session) {
   })
 
   # Thèmes de couleur
-  observeEvent(input$select_theme_violet, {
-    updateTextInput(session, "theme_color", value = "#d7bde2")
-  })
+  for (theme_id in names(themes)) {
+    local({
+      local_theme_id <- theme_id
+      local_theme <- themes[[local_theme_id]]
 
-  observeEvent(input$select_theme_blue, {
-    updateTextInput(session, "theme_color", value = "#aed6f1")
-  })
-
-  observeEvent(input$select_theme_green, {
-    updateTextInput(session, "theme_color", value = "#a9dfbf")
-  })
-
-  observeEvent(input$select_theme_orange, {
-    updateTextInput(session, "theme_color", value = "#fad7a0")
-  })
-
-  observeEvent(input$select_theme_pink, {
-    updateTextInput(session, "theme_color", value = "#ffd1de")
-  })
-
-  observeEvent(input$select_theme_grey, {
-    updateTextInput(session, "theme_color", value = "#ccd1d1")
-  })
+      # Créer un observateur dynamique pour chaque thème
+      observeEvent(input[[paste0("select_theme_", local_theme_id)]], {
+        updateTextInput(session, "theme_color", value = local_theme$primary)
+      })
+    })
+  }
 
   # Retour à l'accueil depuis les règles
   observeEvent(input$back_from_rules, {
@@ -439,12 +473,13 @@ server <- function(input, output, session) {
     updateTextInput(session, "display_mode", value = "size_select")
   })
 
-  # Sélection de la taille 6x6
-  observeEvent(input$select_size_6, {
-    updateTextInput(session, "grid_size", value = "6")
+  # Fonction pour traiter la sélection de taille
+
+  handle_size_selection <- function(size) {
+    updateTextInput(session, "grid_size", value = as.character(size))
 
     # Générer la grille initiale
-    game_data(generate_takuzu_grid(6, as.numeric(input$difficulty)))
+    game_data(generate_takuzu_grid(size, as.numeric(input$difficulty)))
 
     # Initialiser les valeurs des cellules
     cell_values(game_data()$grid)
@@ -455,48 +490,24 @@ server <- function(input, output, session) {
 
     # Passer à l'écran de jeu
     updateTextInput(session, "display_mode", value = "game")
+  }
+
+  # Changer de valeur pour les trois tailles possibles
+  observeEvent(input$select_size_6, {                    # Grille 6x6
+    handle_size_selection(6)
   })
-
-  # Sélection de la taille 8x8
-  observeEvent(input$select_size_8, {
-    updateTextInput(session, "grid_size", value = "8")
-
-    # Générer la grille initiale
-    game_data(generate_takuzu_grid(8, as.numeric(input$difficulty)))
-
-    # Initialiser les valeurs des cellules
-    cell_values(game_data()$grid)
-
-    # Démarrer le minuteur
-    start_time(Sys.time())
-    timer_active(TRUE)
-
-    # Passer à l'écran de jeu
-    updateTextInput(session, "display_mode", value = "game")
+  observeEvent(input$select_size_8, {                    # Grille 8x8
+    handle_size_selection(8)
   })
-
-  # Sélection de la taille 10x10
-  observeEvent(input$select_size_10, {
-    updateTextInput(session, "grid_size", value = "10")
-
-    # Générer la grille initiale
-    game_data(generate_takuzu_grid(10, as.numeric(input$difficulty)))
-
-    # Initialiser les valeurs des cellules
-    cell_values(game_data()$grid)
-
-    # Démarrer le minuteur
-    start_time(Sys.time())
-    timer_active(TRUE)
-
-    # Passer à l'écran de jeu
-    updateTextInput(session, "display_mode", value = "game")
+  observeEvent(input$select_size_10, {                   # Grille 10x10
+    handle_size_selection(10)
   })
 
   observeEvent(input$show_solution_btn, {
     req(game_data())
 
     if (!showing_solution()) {
+
       # Si on n'affiche pas déjà la solution, sauvegarder les valeurs actuelles
       temp_values(cell_values())
 
@@ -507,6 +518,7 @@ server <- function(input, output, session) {
       # Changer le texte du bouton
       updateActionButton(session, "show_solution_btn", label = "Masquer Solution")
     } else {
+
       # Si on affiche déjà la solution, restaurer les valeurs du joueur
       cell_values(temp_values())
       showing_solution(FALSE)
@@ -527,8 +539,9 @@ server <- function(input, output, session) {
 
   # Génération dynamique de la grille UI
   output$grid_ui <- renderUI({
-    req(game_data())  # S'assurer que game_data est initialisé
+    req(game_data())
 
+    # Définir les paramètres de tailles et de données
     size <- grid_size()
     data <- game_data()
     values <- cell_values()
@@ -536,7 +549,7 @@ server <- function(input, output, session) {
     current_theme <- input$theme_color
 
     # Ajuster dynamiquement le style de la grille selon la taille
-    grid_width <- min(size * 50, 500)  # Limiter la largeur maximale
+    grid_width <- min(size * 50, 500)
 
     # Style de la grille adapté à la taille
     grid_style <- sprintf("
@@ -587,8 +600,9 @@ server <- function(input, output, session) {
     )
   })
 
-  # Cette fonction crée tous les observateurs possibles pour les tailles de grilles supportées
+  # Fonction qui crée tous les observateurs possibles pour les tailles de grilles supportées
   create_cell_observers <- function(max_size = 10) {
+
     # Créer des observateurs pour chaque cellule possible jusqu'à la taille maximale
     for (row in 1:max_size) {
       for (col in 1:max_size) {
@@ -598,6 +612,7 @@ server <- function(input, output, session) {
           cell_id <- paste0("cell_", local_row, "_", local_col)
 
           observeEvent(input[[cell_id]], {
+
             # Ne procéder que si nous avons des données de jeu et la cellule est dans la grille actuelle
             req(game_data())
             size <- grid_size()
@@ -646,15 +661,20 @@ server <- function(input, output, session) {
         cell_id <- paste0("cell_", row, "_", col)
 
         if (values[row, col] == "") {
-          # Cellule vide - on ne la compte pas comme erreur mais on la marque quand même
+
+          # Cellule vide - ne pas la compter comme erreur mais on la marqué en pointillés
           shinyjs::addClass(selector = paste0("#", cell_id), class = "cell-empty")
           shinyjs::removeClass(selector = paste0("#", cell_id), class = "cell-error")
-        } else if (values[row, col] != data$solution[row, col]) {
+        }
+        else if (values[row, col] != data$solution[row, col]) {
+
           # Cellule incorrecte
           errors <- errors + 1
           shinyjs::addClass(selector = paste0("#", cell_id), class = "cell-error")
           shinyjs::removeClass(selector = paste0("#", cell_id), class = "cell-empty")
-        } else {
+        }
+        else {
+
           # Cellule correcte
           shinyjs::removeClass(selector = paste0("#", cell_id), class = "cell-error")
           shinyjs::removeClass(selector = paste0("#", cell_id), class = "cell-empty")
@@ -667,6 +687,7 @@ server <- function(input, output, session) {
 
     # Afficher un message selon le résultat
     if (errors == 0 && !any(values == "")) {
+
       # Tout est correct et complet
       timer_active(FALSE)
 
@@ -679,26 +700,33 @@ server <- function(input, output, session) {
       # Message de félicitations avec le temps
       showModal(modalDialog(
         title = div("Félicitation !", style = "color: black;"),
-        HTML(sprintf("<p class = 'verification'> Bravo, vous avez résolu le puzzle en %d minutes et %d secondes.</p>",
+        HTML(sprintf("<p class = 'verification'>
+                     Bravo, vous avez résolu le puzzle en %d minutes et %d secondes.</p>",
                      final_minutes, final_seconds)),
         easyClose = TRUE,
         footer = modalButton("Continuer"),
         class = "custom-modal-style"
       ))
-    } else if (errors > 0) {
+    }
+    else if (errors > 0) {
+
       # Il y a des erreurs
       showModal(modalDialog(
         title = div("Erreurs détectées", style = "color: black;"),
-        HTML(sprintf("<p class = 'verification'> Il y a %d erreur(s) dans votre grille. Les cases incorrectes sont marquées en rouge.</p>", errors)),
+        HTML(sprintf("<p class = 'verification'>
+                     Il y a %d erreur(s) dans votre grille. Les cases incorrectes sont marquées en rouge.</p>", errors)),
         easyClose = TRUE,
         footer = modalButton("Continuer"),
         class = "custom-modal-style"
       ))
-    } else {
+    }
+    else {
+
       # Des cases sont vides
       showModal(modalDialog(
         title = div("Grille incomplète", style = "color: black;"),
-        HTML("<p class = 'verification'> Aucune erreur n'a été détectée pour le moment mais des cases sont vides. Veuillez compléter la grille.</p>"),
+        HTML("<p class = 'verification'>
+             Aucune erreur n'a été détectée pour le moment mais des cases sont vides. Veuillez compléter la grille.</p>"),
         easyClose = TRUE,
         footer = modalButton("Continuer"),
         class = "custom-modal-style"
@@ -708,9 +736,10 @@ server <- function(input, output, session) {
 
   # Nouvelle partie
   observeEvent(input$new_game_btn, {
+
     # Obtenir la taille et difficulté actuelles
     size <- grid_size()
-    diff_level <- as.numeric(input$difficulty) # Prendre la difficulté sélectionnée
+    diff_level <- as.numeric(input$difficulty)
 
     # Générer une nouvelle grille avec la taille actuelle
     new_data <- generate_takuzu_grid(size, diff_level)
@@ -721,7 +750,7 @@ server <- function(input, output, session) {
     start_time(Sys.time())
     timer_active(TRUE)
 
-    # Réinitialiser l'état du bouton "Voir solution"
+    # Réinitialiser l'état du bouton de solution
     showing_solution(FALSE)
     updateActionButton(session, "show_solution_btn", label = "Voir solution")
 
@@ -740,6 +769,7 @@ server <- function(input, output, session) {
         shinyjs::removeClass(selector = paste0("#", cell_id), class = "cell-empty")
       }
     }
+
     # Réinitialiser le compteur d'erreurs
     error_count(0)
   })

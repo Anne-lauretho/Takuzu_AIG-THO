@@ -233,7 +233,7 @@ generate_takuzu_grid <- function(n, difficulty) {
   # Matrice booléenne indiquant les cellules initialement remplies et les autres vides
   initial_filled <- puzzle_grid != ""
 
-  # Retourner une liste avec : la grille correcte avec : les cases vides, la grill
+  # Retourner une liste avec : la grille correcte, les cases vides
   return(list(
 
     # La grille correcte avec les cases vides initiales
