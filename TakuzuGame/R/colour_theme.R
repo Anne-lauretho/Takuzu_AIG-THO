@@ -4,11 +4,11 @@
 #' @export
 colour_theme <- function() {
   list(
-    violet = list(id = "violet",
-                  primary = "#d7bde2",
-                  accent = "#af7ac5",
-                  outline = "#633974",
-                  name = "Violet"),
+    violet = list(id = "violet",        # identifiant du thème
+                  primary = "#d7bde2",  # couleur principale (fond)
+                  accent = "#af7ac5",   # couleur secondaire (éléments comme les boutons)
+                  outline = "#633974",  # couleur de la bordure
+                  name = "Violet"),     # nom lisible pour l'utilisateur
 
     pink = list(id = "pink",
                 primary = "#ffd1de",

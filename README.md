@@ -30,17 +30,20 @@ Voici un aperçu de l'architecture du projet, avec une explication de chaque fic
 ```Takuzu_AIG-THO/
     ├── TakuzuGame/
     │    ├── R/
+    │    │   ├── colour_theme.R
     │    │   └── generate_grid.R
     │    ├── inst/app/
     │    │   ├── www/
+    │    │   │    ├── logo_Takuzu.png
     │    │   │    ├── rule1.png
     │    │   │    ├── rule2.png
     │    │   │    ├── rule3.png
     │    │   │    └── styles.css
     │    │   └── app.R
     │    ├── man/
-    │    │   ├── hello.Rd
-    │    │   └── lancer_app.Rd
+    │    │   ├── colour_theme.Rd
+    │    │   ├── generate_takuzu_grid. Rd
+    │    │   └── hello.Rd
     │    ├── DESCRIPTION
     │    ├── NAMESPACE
     │    └── TakuzuGame.Rproj

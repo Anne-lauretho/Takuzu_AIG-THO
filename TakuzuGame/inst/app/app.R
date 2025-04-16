@@ -1,4 +1,4 @@
-# Installer le package (décommenter la ligne du dessous)
+# Installer le package
 
 devtools::load_all(".")
 
@@ -60,7 +60,7 @@ ui <- fluidPage(
       div(class = "cloud")
   ),
 
-  # Page d'accueil (mettre les boutons, les images et le texte)
+  # Page d'accueil (mettre les 3 boutons, le logo et le titre)
   conditionalPanel(
     condition = "input.display_mode == 'home'",
     div(class = "button-container",
@@ -141,7 +141,7 @@ ui <- fluidPage(
             Pour remplir les grilles, appuyer sur une case pour changer le chiffre.
             Chaque grille possède une unique solution et doit respecter les règles suivantes pour pouvoir lobtenir :"),
 
-            # Première règle avec image 1
+            # Première règle avec la première image
             div(class = "rule-item",
                 tags$div(class = "rule-text",
                          tags$li("Il est interdit d'avoir plus de deux chiffres identiques l'un à côté de l'autre :")
@@ -151,7 +151,7 @@ ui <- fluidPage(
                 )
             ),
 
-            # Deuxième règle avec image 2
+            # Deuxième règle avec la deuxième image
             div(class = "rule-item",
                 tags$div(class = "rule-text",
                          tags$li("Chaque ligne et chaque colonne doivent comptabiliser autant de 0 que de 1 :")
@@ -161,7 +161,7 @@ ui <- fluidPage(
                 )
             ),
 
-            # Troisième règle avec image 3
+            # Troisième règle avec la troisième image
             div(class = "rule-item",
                 tags$div(class = "rule-text",
                          tags$li("Aucune ligne ou colonne ne peut être identique :")
@@ -285,6 +285,7 @@ server <- function(input, output, session) {
     accent_color <- selected_theme$accent
     outline_color <- selected_theme$outline
 
+    # Génère dynamiquement des styles CSS en fonction du thème choisi
     css <- paste0("
   body {
     background-color: ", primary_color, ";
