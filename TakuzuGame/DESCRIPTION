@@ -10,6 +10,9 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports:
-    shiny
-Remotes: Anne-lauretho/Takuzu_AIG-THO
+    shiny,
+    shinyjs,
+    shinydashboard,
+    shinyWidgets,
+    TakuzuGame
 RoxygenNote: 7.3.2
