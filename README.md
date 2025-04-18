@@ -6,7 +6,7 @@ Le nom de notre projet est **Takuzu_AIG-THO** et il a été réalisé par les me
 - THOMAS Anne-Laure
 
 ## Objectif du projet
-Le but de ce projet est de créer une bibliothèque en langage R pour le jeu Takuzu (également appelé Binario), qui inclut également une application Shiny interactive. L'application permettra aux utilisateurs de jouer au Takuzu dans un environnement graphique, tout en respectant les règles de logique combinatoire du jeu.
+Le but de ce projet est de créer une bibliothèque en langage R pour le jeu Takuzu (également appelé Binairo), qui inclut également une application Shiny interactive. L'application permettra aux utilisateurs de jouer au Takuzu dans un environnement graphique, tout en respectant les règles de logique combinatoire du jeu.
 
 ## Introduction au jeu Takuzu (Binairo)
 Takuzu est un jeu de logique combinatoire, similaire au Sudoku, qui se joue sur une grille carrée, généralement de taille 6 × 6 ou 8 × 8. Le but du jeu est de remplir cette grille avec des 0 et des 1 tout en respectant des règles strictes. La complexité du jeu augmente avec la taille de la grille.
@@ -42,8 +42,7 @@ Voici un aperçu de l'architecture du projet, avec une explication de chaque fic
     │    │   └── app.R
     │    ├── man/
     │    │   ├── colour_theme.Rd
-    │    │   ├── generate_takuzu_grid. Rd
-    │    │   └── hello.Rd
+    │    │   └── generate_grid.Rd
     │    ├── DESCRIPTION
     │    ├── NAMESPACE
     │    └── TakuzuGame.Rproj
@@ -56,7 +55,7 @@ Voici un aperçu de l'architecture du projet, avec une explication de chaque fic
     - **man** est un dossier contenant la documentation des fonctions du package.
     - **DESCRIPTION** est un fichier d’information sur le package avec, par exemple, le nom, la version et les dépendances.
     - **NAMESPACE** liste les fonctions exportées et leurs dépendances.
-    - **TakuzuGame.Rproj** est un fichier projet RStudio.
+    - **TakuzuGame.Rproj** est un fichier du projet RStudio.
 
 ### Lancer l'application Shiny 
 Pour exécuter l'application Shiny, vous pouvez utiliser le fichier **app.R** dans le dossier **inst/app/**. Voici comment procéder : 
