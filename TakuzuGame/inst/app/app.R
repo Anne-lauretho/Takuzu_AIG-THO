@@ -134,7 +134,7 @@ ui <- fluidPage(
 
             p("Le Takuzu est un jeu de logique qui se joue sur une grille comportant des cellules à remplir avec les chiffres 0 et 1.
             Pour remplir les grilles, appuyer sur une case pour changer le chiffre.
-            Chaque grille possède une unique solution et doit respecter les règles suivantes pour pouvoir lobtenir :"),
+            Chaque grille possède une unique solution et doit respecter les règles suivantes pour pouvoir l'obtenir :"),
 
             # Première règle avec la première image
             div(class = "rule-item",
