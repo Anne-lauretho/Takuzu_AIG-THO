@@ -1,12 +1,12 @@
 Package: TakuzuGame
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Takuzu Game
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: AIGOIN Emilie - THOMAS Anne-Laure
+Maintainer: AIGOIN Emilie <emilie.aigoin@etu.umontpellier.fr> - THOMAS Anne-Laure <anne-laure.thomas@etu.umontpellier.fr>
+Description: The aim of this project is to create an R language library for the game Takuzu, which also includes an interactive Shiny application. 
+    The application will allow users to play Takuzu in a graphical environment, while respecting the game's combinatorial logic rules.
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports:

@@ -1,16 +1,16 @@
-#' Create a Takuzu Grid
+#' Créer une grille de Takuzu
 #'
-#' This function creates a valid Takuzu grid puzzle with its solution.
-#' Takuzu is a binary puzzle where each row and column must contain an equal number of 0s and 1s,
-#' with no more than two identical numbers adjacent to each other, and no two rows or columns can be identical.
+#' Cette fonction crée une grille de Takuzu valide avec sa solution.
+#' Takuzu est un puzzle binaire où chaque ligne et chaque colonne doit contenir un nombre égal de 0 et de 1,
+#' avec pas plus de deux nombres identiques adjacents l'un à l'autre, et deux lignes ou colonnes ne peuvent pas être identiques.
 #'
-#' @param n Integer. The size of the grid (n x n). Must be even. Default is 6.
-#' @param difficulty Numeric between 0 and 1. Controls how many cells are initially empty. Default is 0.5.
+#' @param n Integer. La taille de la grille (n x n), elle doit être paire. La valeur par défaut est 6.
+#' @param difficulty Numérique entre 0 et 8. Contrôle le nombre de cellules initialement vides. La valeur par défaut est 2.
 #'
-#' @return A list containing:
-#'   \item{grid}{The puzzle grid with empty cells represented by ""}
-#'   \item{solution}{The complete solution grid}
-#'   \item{initial_filled}{A logical matrix indicating which cells were initially filled}
+#' @return Une liste contenant :
+#'   \item{grid}{La grille du puzzle dont les cellules vides sont représentées par des ""}
+#'   \item{solution}{La solution complète de la grille}
+#'   \item{initial_filled}{Une matrice logique indiquant quelles cellules ont été initialement remplies.}
 #' @export
 generate_takuzu_grid <- function(n, difficulty) {
 

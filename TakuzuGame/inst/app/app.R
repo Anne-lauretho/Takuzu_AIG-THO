@@ -64,9 +64,8 @@ ui <- fluidPage(
   conditionalPanel(
     condition = "input.display_mode == 'home'",
     div(class = "button-container",
-        div(style = "display: flex; align-items: center; justify-content: center; width: 100%;",
-            h1("Jeu de Takuzu"),
-            img(src = "logo_takuzu.png", height = "100px", style = "margin-right: 10px;")
+        div(style = "display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: -10px;",
+            img(src = "logo_takuzu.png", height = "200px")
         ),
         actionButton("start_button", "Jouer", class = "btn-custom"),
         br(),
@@ -82,9 +81,6 @@ ui <- fluidPage(
     div(class = "game-container",
         h2("Personnalisation du jeu"),
 
-        div(class = "theme-options",
-            h3("Choisissez un thème de couleur"),
-
             div(style = "display: flex; justify-content: center; flex-wrap: wrap;",
                 lapply(themes, function(themes) {
                   div(id = paste0("theme_", themes$id),
@@ -94,8 +90,7 @@ ui <- fluidPage(
                       div(class = "theme-name", themes$name)
                   )
                 })
-            )
-        ),
+            ),
 
         actionButton("back_from_customize", "Retour", class = "btn-custom")
     )
@@ -197,9 +192,8 @@ ui <- fluidPage(
   conditionalPanel(
     condition = "input.display_mode == 'game'",
     div(class = "game-container",
-        div(style = "display: flex; align-items: center; justify-content: center; width: 100%;",
-            h2("Jeu de Takuzu"),
-            img(src = "logo_takuzu.png", height = "50px", style = "margin-right: 10px;")
+        div(style = "display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: -40px;",
+            img(src = "logo_takuzu.png", height = "100px")
         ),
 
         # Affichage simple du temps de jeu
