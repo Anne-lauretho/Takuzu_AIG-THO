@@ -10,9 +10,5 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports:
-    shiny,
-    shinyjs,
-    shinydashboard,
-    shinyWidgets,
-    TakuzuGame
+    shiny
 RoxygenNote: 7.3.2
